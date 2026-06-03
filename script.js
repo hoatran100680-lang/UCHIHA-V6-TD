@@ -1,209 +1,649 @@
-let countdownInterval = null; // Biến quản lý luồng đếm ngược thời gian thực
+/* =========================
+   TAB SYSTEM
+========================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-    checkLocalKey();
-    initTabs();
-    initSliders();
-    buildAdvancedChartGrid();
-    initLiveRAMWave();
-    initCustomSettings();
+const tabs = document.querySelectorAll(".tab");
+const panels = document.querySelectorAll(".panel");
 
-    document.getElementById("btn-login").addEventListener("click", handleLogin);
-    document.getElementById("btn-logout").addEventListener("click", logout);
-    document.getElementById("btn-clean-ram").addEventListener("click", runRamCleaner);
+tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+
+        tabs.forEach(btn =>
+            btn.classList.remove("active")
+        );
+
+        panels.forEach(panel =>
+            panel.classList.remove("activePanel")
+        );
+
+        tab.classList.add("active");
+
+        const target =
+        document.getElementById(
+        tab.dataset.tab
+        );
+
+        target.classList.add(
+        "activePanel"
+        );
+
+        playSound(700, 0.05);
+    });
 });
 
-// ================= GIẢI MÃ & KIỂM TRA THỜI GIAN THỰC CỦA KEY =================
+/* =========================
+   SOUND ENGINE
+========================= */
 
-function verifyKeyLocally(keyStr) {
-    if (!keyStr || !keyStr.startsWith("NEXORA-")) {
-        return { valid: false, message: "Định dạng mã Key không hợp lệ!" };
-    }
-    try {
-        const parts = keyStr.split("-");
-        let encodedTime = parts[parts.length - 1];
-        while (encodedTime.length % 4 !== 0) encodedTime += "=";
-        
-        // Bóc tách payload chuỗi: "start_timestamp|expiry_timestamp"
-        const decodedPayload = atob(encodedTime);
-        const timeParts = decodedPayload.split("|");
-        
-        if (timeParts.length !== 2) return { valid: false, message: "Cấu trúc mã hóa Key bị lỗi!" };
+let soundEnabled = true;
 
-        const startTimestamp = parseInt(timeParts[0]);
-        const expiredTimestamp = parseInt(timeParts[1]);
+function playSound(freq = 700, volume = 0.05){
 
-        if (isNaN(startTimestamp) || isNaN(expiredTimestamp)) return { valid: false, message: "Dữ liệu thời gian bị lỗi!" };
-        if (Date.now() >= expiredTimestamp) return { valid: false, message: "Key này đã hết thời hạn sử dụng!" };
+    if(!soundEnabled) return;
 
-        const startDateString = new Date(startTimestamp).toLocaleString("vi-VN");
-        let expiryDateString = "Vĩnh Viễn";
-        if (expiredTimestamp < 9000000000000) {
-            expiryDateString = new Date(expiredTimestamp).toLocaleString("vi-VN");
+    const AudioContext =
+    window.AudioContext ||
+    window.webkitAudioContext;
+
+    const ctx =
+    new AudioContext();
+
+    const osc =
+    ctx.createOscillator();
+
+    const gain =
+    ctx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.value = freq;
+
+    gain.gain.value = volume;
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+
+    setTimeout(()=>{
+        osc.stop();
+        ctx.close();
+    },60);
+}
+
+/* =========================
+   SWITCHES
+========================= */
+
+const switches =
+document.querySelectorAll(
+".switch input"
+);
+
+switches.forEach(sw => {
+
+    sw.addEventListener(
+    "change",
+    ()=>{
+
+        playSound(900,0.05);
+
+        addLog(
+        "Switch "
+        +(sw.checked
+        ? "Enabled"
+        : "Disabled")
+        );
+
+    });
+
+});
+
+/* =========================
+   SLIDERS
+========================= */
+
+const sliders =
+document.querySelectorAll(
+'input[type="range"]'
+);
+
+sliders.forEach(sl=>{
+
+    sl.addEventListener(
+    "input",
+    ()=>{
+
+        playSound(
+        500 +
+        Number(sl.value)*3,
+        0.03
+        );
+
+    });
+
+});
+
+/* =========================
+   SYSTEM STATS
+========================= */
+
+const cpuUsage =
+document.getElementById(
+"cpuUsage"
+);
+
+const ramUsage =
+document.getElementById(
+"ramUsage"
+);
+
+const netUsage =
+document.getElementById(
+"netUsage"
+);
+
+function updateStats(){
+
+    if(cpuUsage)
+    cpuUsage.textContent =
+    Math.floor(
+    Math.random()*100
+    )+"%";
+
+    if(ramUsage)
+    ramUsage.textContent =
+    Math.floor(
+    Math.random()*100
+    )+"%";
+
+    if(netUsage)
+    netUsage.textContent =
+    (
+    Math.floor(
+    Math.random()*900
+    )+100
+    )+" KB/s";
+}
+
+setInterval(
+updateStats,
+1500
+);
+
+updateStats();
+
+/* =========================
+   LIVE MONITOR
+========================= */
+
+const ramUsed =
+document.getElementById(
+"ramUsed"
+);
+
+const ramFree =
+document.getElementById(
+"ramFree"
+);
+
+const cpuLive =
+document.getElementById(
+"cpuLive"
+);
+
+const fpsLive =
+document.getElementById(
+"fpsLive"
+);
+
+function updateLiveStats(){
+
+    const used =
+    Math.floor(
+    Math.random()*2500
+    )+1200;
+
+    const free =
+    4096 - used;
+
+    const cpu =
+    Math.floor(
+    Math.random()*100
+    );
+
+    const fps =
+    Math.floor(
+    Math.random()*15
+    )+55;
+
+    if(ramUsed)
+    ramUsed.textContent =
+    used+" MB";
+
+    if(ramFree)
+    ramFree.textContent =
+    free+" MB";
+
+    if(cpuLive)
+    cpuLive.textContent =
+    cpu+"%";
+
+    if(fpsLive)
+    fpsLive.textContent =
+    fps;
+}
+
+setInterval(
+updateLiveStats,
+1000
+);
+
+updateLiveStats();
+
+/* =========================
+   CONSOLE
+========================= */
+
+const consoleBox =
+document.getElementById(
+"consoleBox"
+);
+
+function addLog(text){
+
+    if(!consoleBox) return;
+
+    const div =
+    document.createElement(
+    "div"
+    );
+
+    const time =
+    new Date()
+    .toLocaleTimeString();
+
+    div.textContent =
+    "["+time+"] "
+    + text;
+
+    consoleBox.appendChild(div);
+
+    consoleBox.scrollTop =
+    consoleBox.scrollHeight;
+}
+
+setInterval(()=>{
+
+    addLog(
+    "System monitoring..."
+    );
+
+},3000);
+
+/* =========================
+   RAM CLEAN
+========================= */
+
+const cleanRam =
+document.getElementById(
+"cleanRam"
+);
+
+if(cleanRam){
+
+    cleanRam.onclick = ()=>{
+
+        playSound(
+        1100,
+        0.08
+        );
+
+        addLog(
+        "Cleaning RAM..."
+        );
+
+        setTimeout(()=>{
+
+            addLog(
+            "RAM optimization completed"
+            );
+
+        },1500);
+
+    };
+
+}
+
+/* =========================
+   CROSSHAIR UI
+========================= */
+
+const crosshair =
+document.getElementById(
+"virtualCrosshair"
+);
+
+const toggleCrosshair =
+document.getElementById(
+"toggleCrosshair"
+);
+
+if(toggleCrosshair){
+
+    toggleCrosshair.onclick = ()=>{
+
+        playSound(
+        800,
+        0.06
+        );
+
+        if(
+        crosshair.style.display
+        === "block"
+        ){
+
+            crosshair.style.display =
+            "none";
+
+            addLog(
+            "Overlay hidden"
+            );
+
+        }else{
+
+            crosshair.style.display =
+            "block";
+
+            addLog(
+            "Overlay visible"
+            );
+
         }
 
-        return { 
-            valid: true, 
-            startAt: startDateString,
-            expiredAt: expiryDateString,
-            expiryMs: expiredTimestamp 
-        };
-    } catch (e) {
-        return { valid: false, message: "Mã kích hoạt sai hoặc bị sửa đổi!" };
-    }
+    };
+
 }
 
-function startRealtimeMenuCountdown(expiryMs) {
-    if (countdownInterval) clearInterval(countdownInterval);
-    const tickerElement = document.getElementById("menu-countdown-bar");
+/* =========================
+   THEME SWITCH
+========================= */
 
-    if (expiryMs > 9000000000000) {
-        tickerElement.innerHTML = `⏳ HẠN DÙNG: <span style="color:#00ffcc; font-weight:bold;">VĨNH VIỄN (PREMIUM)</span>`;
-        return;
-    }
+const themeBtn =
+document.getElementById(
+"themeBtn"
+);
 
-    function updateTicker() {
-        const timeRemaining = expiryMs - Date.now();
+let purpleMode = true;
 
-        if (timeRemaining <= 0) {
-            tickerElement.innerHTML = `❌ KEY HẾT HẠN - ĐANG KHÓA APP...`;
-            clearInterval(countdownInterval);
-            logout(); // Đẩy văng người dùng ra ngoài màn hình khóa [2]
-            return;
+if(themeBtn){
+
+    themeBtn.onclick = ()=>{
+
+        playSound(
+        1200,
+        0.06
+        );
+
+        if(purpleMode){
+
+            document.documentElement
+            .style.setProperty(
+            "--purple",
+            "#00d9ff"
+            );
+
+            document.documentElement
+            .style.setProperty(
+            "--purple2",
+            "#00aaff"
+            );
+
+            addLog(
+            "Theme: Cyan"
+            );
+
+        }else{
+
+            document.documentElement
+            .style.setProperty(
+            "--purple",
+            "#b43cff"
+            );
+
+            document.documentElement
+            .style.setProperty(
+            "--purple2",
+            "#7b2fff"
+            );
+
+            addLog(
+            "Theme: Purple"
+            );
+
         }
 
-        const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000).toString().padStart(2, '0');
+        purpleMode =
+        !purpleMode;
 
-        tickerElement.innerHTML = `⏱️ CÒN LẠI: <span style="color:#ff0055; font-weight:bold;">${days} Ngày ${hours}:${minutes}:${seconds}</span>`;
-    }
+    };
 
-    updateTicker();
-    countdownInterval = setInterval(updateTicker, 1000); // Cập nhật thời gian thực mỗi 1 giây
 }
 
-function checkLocalKey() {
-    const savedKey = localStorage.getItem("local_app_key");
-    if (savedKey) {
-        const result = verifyKeyLocally(savedKey);
-        if (result.valid) {
-            enterApp(result.startAt, result.expiredAt);
-            startRealtimeMenuCountdown(result.expiryMs);
-        } else { logout(); }
-    }
-}
+/* =========================
+   RESET SETTINGS
+========================= */
 
-function handleLogin() {
-    const keyInput = document.getElementById("key-input").value.trim();
-    const errorTarget = document.getElementById("auth-error");
-    if (!keyInput) { errorTarget.innerText = "Vui lòng nhập mã Key!"; return; }
+const resetBtn =
+document.getElementById(
+"resetBtn"
+);
 
-    const result = verifyKeyLocally(keyInput);
-    if (result.valid) {
-        localStorage.setItem("local_app_key", keyInput);
-        enterApp(result.startAt, result.expiredAt);
-        startRealtimeMenuCountdown(result.expiryMs);
-    } else { errorTarget.innerText = result.message; }
-}
+if(resetBtn){
 
-function enterApp(startDate, expiryDate) {
-    document.getElementById("auth-screen").classList.remove("active");
-    document.getElementById("main-screen").classList.add("active");
-    document.getElementById("key-info").innerHTML = `
-        <div style="text-align: left; font-size: 11px; line-height: 1.6;">
-            <p style="margin:2px 0;">📅 Bắt đầu: <span style="color:#00ffcc;">${startDate}</span></p>
-            <p style="margin:2px 0;">⏳ Hết hạn: <span class="highlight">${expiryDate}</span></p>
-        </div>
-    `;
-}
+    resetBtn.onclick = ()=>{
 
-function logout() {
-    if (countdownInterval) clearInterval(countdownInterval);
-    localStorage.removeItem("local_app_key"); // Xóa sạch dữ liệu key hết hạn
-    document.getElementById("main-screen").classList.remove("active");
-    document.getElementById("auth-screen").classList.add("active");
-    document.getElementById("key-input").value = "";
-    document.getElementById("auth-error").innerText = "Hệ thống đã khóa hoặc Key đã hết hạn dùng.";
-}
+        playSound(
+        600,
+        0.07
+        );
 
-// ================= HOẠT HỌA GIAO DIỆN & SÓNG LƯỚI RAM =================
-
-function initTabs() {
-    document.querySelectorAll(".nav-item").forEach(item => {
-        item.addEventListener("click", () => {
-            document.querySelectorAll(".nav-item").forEach(nav => nav.classList.remove("active"));
-            document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
-            item.classList.add("active");
-            document.getElementById(item.getAttribute("data-tab")).classList.add("active");
+        switches.forEach(sw=>{
+            sw.checked = false;
         });
-    });
+
+        sliders.forEach(sl=>{
+            sl.value = 0;
+        });
+
+        if(crosshair){
+            crosshair.style.display =
+            "none";
+        }
+
+        document.documentElement
+        .style.setProperty(
+        "--purple",
+        "#b43cff"
+        );
+
+        document.documentElement
+        .style.setProperty(
+        "--purple2",
+        "#7b2fff"
+        );
+
+        addLog(
+        "Settings reset"
+        );
+
+    };
+
 }
 
-function initSliders() {
-    document.querySelectorAll(".range-item").forEach(item => {
-        const slider = item.querySelector("input[type='range']");
-        const valLabel = item.querySelector(".range-val");
-        slider.addEventListener("input", (e) => { valLabel.innerText = e.target.value + "%"; });
-    });
-}
+/* =========================
+   RAM CHART
+========================= */
 
-const TOTAL_BARS = 45;
-function buildAdvancedChartGrid() {
-    const container = document.getElementById("wave-container");
-    container.innerHTML = "";
-    for (let i = 0; i < TOTAL_BARS; i++) {
-        const bar = document.createElement("div");
-        bar.className = "wave-bar";
-        bar.style.height = (Math.floor(Math.random() * 20) + 40) + "%";
-        container.appendChild(bar);
+const canvas =
+document.getElementById(
+"ramChart"
+);
+
+if(canvas){
+
+    const ctx =
+    canvas.getContext("2d");
+
+    function resizeCanvas(){
+
+        canvas.width =
+        canvas.offsetWidth;
+
+        canvas.height =
+        260;
     }
+
+    resizeCanvas();
+
+    window.addEventListener(
+    "resize",
+    resizeCanvas
+    );
+
+    let points = [];
+
+    function drawChart(){
+
+        const value =
+        Math.floor(
+        Math.random()*40
+        )+40;
+
+        points.push(value);
+
+        if(points.length > 70){
+            points.shift();
+        }
+
+        ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+        );
+
+        ctx.beginPath();
+
+        points.forEach(
+        (p,i)=>{
+
+            const x =
+            (i/69)
+            * canvas.width;
+
+            const y =
+            canvas.height -
+            (
+            p/100
+            )*canvas.height;
+
+            if(i===0)
+            ctx.moveTo(x,y);
+            else
+            ctx.lineTo(x,y);
+        });
+
+        ctx.strokeStyle =
+        "#b43cff";
+
+        ctx.lineWidth = 4;
+
+        ctx.shadowBlur = 20;
+
+        ctx.shadowColor =
+        "#b43cff";
+
+        ctx.stroke();
+
+        ctx.lineTo(
+        canvas.width,
+        canvas.height
+        );
+
+        ctx.lineTo(
+        0,
+        canvas.height
+        );
+
+        ctx.closePath();
+
+        const gradient =
+        ctx.createLinearGradient(
+        0,
+        0,
+        0,
+        canvas.height
+        );
+
+        gradient.addColorStop(
+        0,
+        "rgba(180,60,255,.35)"
+        );
+
+        gradient.addColorStop(
+        1,
+        "rgba(180,60,255,0)"
+        );
+
+        ctx.fillStyle =
+        gradient;
+
+        ctx.fill();
+    }
+
+    setInterval(
+    drawChart,
+    500
+    );
 }
 
-function initLiveRAMWave() {
-    const txt = document.getElementById("ram-percentage");
-    setInterval(() => {
-        if (!document.getElementById("main-screen").classList.contains("active")) return;
-        let currentRamValue = Math.floor(Math.random() * (75 - 45 + 1)) + 45;
-        txt.innerText = currentRamValue + "%";
-        
-        const bars = document.querySelectorAll(".wave-bar");
-        for (let i = 0; i < bars.length - 1; i++) { bars[i].style.height = bars[i + 1].style.height; }
-        bars[bars.length - 1].style.height = currentRamValue + "%";
-    }, 200); // Tần suất dịch chuyển cột sóng mượt mà thời gian thực
-}
+/* =========================
+   STARTUP
+========================= */
 
-function printConsole(message, delay = 0) {
-    const consoleBox = document.getElementById("console-log");
-    setTimeout(() => {
-        const line = document.createElement("div");
-        line.className = "console-line"; line.innerText = `> ${message}`;
-        consoleBox.appendChild(line); consoleBox.scrollTop = consoleBox.scrollHeight;
-    }, delay);
-}
+addLog(
+"Dashboard started"
+);
 
-function runRamCleaner() {
-    const btn = document.getElementById("btn-clean-ram");
-    btn.disabled = true; btn.innerText = "ĐANG TỐI ƯU...";
-    document.getElementById("console-log").innerHTML = "";
-    
-    printConsole("Đang quét vùng nhớ cache...", 0);
-    printConsole("Đóng tiểu trình chạy ngầm phân mảnh...", 400);
-    
-    setTimeout(() => {
-        document.querySelectorAll(".wave-bar").forEach(b => b.style.height = "12%");
-        document.getElementById("ram-percentage").innerText = "12%";
-        printConsole("THÀNH CÔNG: Bộ nhớ RAM đưa về mức an toàn (12%)!", 1200);
-        btn.disabled = false; btn.innerText = "DỌN RAM NGAY";
-    }, 1200);
-}
+addLog(
+"Live monitor active"
+);
 
-function initCustomSettings() {
-    document.getElementById("theme-selector").addEventListener("change", (e) => {
-        document.documentElement.style.setProperty('--primary-color', e.target.value);
-    });
-    document.getElementById("darkmode-toggle").addEventListener("change", (e) => {
-        document.documentElement.style.setProperty('--bg-color', e.target.checked ? '#08080a' : '#222228');
-    });
-}
+addLog(
+"Neon UI loaded"
+);
+/* DEVICE INFO */
+
+document.getElementById(
+"cpuCore"
+).textContent =
+navigator.hardwareConcurrency || 4;
+
+document.getElementById(
+"browserName"
+).textContent =
+navigator.userAgent.includes("Chrome")
+? "Chrome"
+: "Browser";
+
+document.getElementById(
+"platformName"
+).textContent =
+navigator.platform;
+
+document.getElementById(
+"screenSize"
+).textContent =
+window.innerWidth +
+"x" +
+window.innerHeight;

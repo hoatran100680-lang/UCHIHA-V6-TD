@@ -1,159 +1,367 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UCHIHA V6 Premium Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>Neon Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
+
 <body>
 
-    <!-- MÀN HÌNH ĐĂNG NHẬP -->
-    <div id="auth-screen" class="screen active">
-        <div class="auth-card">
-            <h2>UCHIHA V6</h2>
-            <p>Vui lòng nhập Key kích hoạt</p>
-            <input type="text" id="key-input" placeholder="Nhập mã Key của bạn tại đây...">
-            <button id="btn-login">Kích Hoạt Hệ Thống</button>
-            <p id="auth-error" class="error-msg"></p>
-        </div>
-    </div>
-
-    <!-- MÀN HÌNH CHÍNH -->
-    <div id="main-screen" class="screen">
-        <div class="content-container">
-            
-           <!-- TAB HOME: Giới thiệu Admin với ảnh tròn -->
-<div id="tab-home" class="tab-content active">
-    <h2>TRANG CHỦ</h2>
-    <div class="admin-profile">
-        <!-- Vùng chứa ảnh đại diện hình tròn -->
-        <div class="avatar-container">
-            <img src="https://i.ibb.co/KxVHS2gG/2a-Obo-Qa0-AOPz5h-D6n-F7h-GLADhbn-EQm-RC8j-FNKsb2.jpg" class="admin-avatar-img" alt="Admin Avatar">
-        </div>
-        
-        <h3>ADMIN VŨ SANG VCTECH E</h3>
-        <p class="admin-desc">💡 Chào mừng bạn đến với bảng điều khiển cao cấp. Hệ thống được tối ưu hóa đặc biệt giúp gia tăng trải nghiệm phần cứng và tinh chỉnh mạng.</p>
-        
-        <!-- Các nút liên kết Mạng Xã Hội -->
-        <div class="social-links">
-            <a href="https://www.facebook.com/share/1GhfgcqHgr/?mibextid=wwXIfr" target="_blank" class="social-btn fb">Facebook</a>
-            <a href="https://zalo.me/g/bhnod9uqdbaiax1yoclz" target="_blank" class="social-btn zl">Zalo</a>
-            <a href="https://www.tiktok.com/@vusangffsp?_r=1&_t=ZS-96oOdUSn6Rw" target="_blank" class="social-btn tt">TikTok</a>
-        </div>
-    </div>
-    
-    <!-- Nơi hiển thị thông tin thời gian bắt đầu và hết hạn của Key -->
-    <div id="key-info" class="status-card"></div>
+<!-- CROSSHAIR UI -->
+<div id="virtualCrosshair">
+    <div class="crosshair"></div>
 </div>
 
+<!-- HEADER -->
+<header class="topbar">
 
-            <!-- TAB FUNC: 7 Tính năng có chú thích -->
-            <div id="tab-func" class="tab-content">
-                <h2>TÍNH NĂNG CHIẾN ĐẤU</h2>
-                <div class="control-list">
-                    <div class="control-item">
-                        <div class="control-text"><span>Aim Assist Pro</span><p class="sub-text">Tự động ghìm tâm và bám mục tiêu chuẩn xác</p></div>
-                        <label class="switch"><input type="checkbox"><span class="slider-round"></span></label>
-                    </div>
-                    <div class="control-item">
-                        <div class="control-text"><span>Headshot Boost</span><p class="sub-text">Tăng tỷ lệ chí mạng vào vùng đầu đối thủ</p></div>
-                        <label class="switch"><input type="checkbox"><span class="slider-round"></span></label>
-                    </div>
-                    <div class="control-item">
-                        <div class="control-text"><span>Fast Switch</span><p class="sub-text">Tối ưu hóa tốc độ chuyển đổi vũ khí nhanh</p></div>
-                        <label class="switch"><input type="checkbox"><span class="slider-round"></span></label>
-                    </div>
-                    <div class="control-item">
-                        <div class="control-text"><span>No Recoil</span><p class="sub-text">Giảm tối đa độ giật của các loại súng</p></div>
-                        <label class="switch"><input type="checkbox"><span class="slider-round"></span></label>
-                    </div>
-                    <div class="control-item">
-                        <div class="control-text"><span>SENVIBITY BOOSTER</span><p class="sub-text">Nhạy - Tăng độ nhạy cảm ứng và phản hồi chạm nhanh hơn</p></div>
-                        <label class="switch"><input type="checkbox"><span class="slider-round"></span></label>
-                    </div>
-                    <div class="control-item">
-                        <div class="control-text"><span>HEADSHOT FIX</span><p class="sub-text">Fix lỗi đầu - Hiệu chỉnh sai số điểm ngắm đầu người chính xác</p></div>
-                        <label class="switch"><input type="checkbox"><span class="slider-round"></span></label>
-                    </div>
-                    <div class="control-item">
-                        <div class="control-text"><span>AIM HOLD</span><p class="sub-text">Ghim tâm - Giữ cố định điểm ngắm khi đứng yên tấn công</p></div>
-                        <label class="switch"><input type="checkbox"><span class="slider-round"></span></label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB BOOST: 7 Thanh kéo mặc định ở mức 0% -->
-            <div id="tab-boost" class="tab-content">
-                <h2>TỐI ƯU HIỆU NĂNG</h2>
-                <div class="control-list">
-                    <div class="range-item"><div class="range-label"><span>Tăng Tốc CPU Core</span><span class="range-val">0%</span></div><input type="range" min="0" max="100" value="0"></div>
-                    <div class="range-item"><div class="range-label"><span>Giải Phóng GPU VRAM</span><span class="range-val">0%</span></div><input type="range" min="0" max="100" value="0"></div>
-                    <div class="range-item"><div class="range-label"><span>Tối Ưu Ping Trận</span><span class="range-val">0%</span></div><input type="range" min="0" max="100" value="0"></div>
-                    <div class="range-item"><div class="range-label"><span>Ép Xung Tần Số Quét</span><span class="range-val">0%</span></div><input type="range" min="0" max="100" value="0"></div>
-                    <div class="range-item"><div class="range-label"><span>Xóa Bộ Nhớ Đệm Ẩn</span><span class="range-val">0%</span></div><input type="range" min="0" max="100" value="0"></div>
-                    <div class="range-item"><div class="range-label"><span>Tốc Độ Phản Hồi Cảm Ứng</span><span class="range-val">0%</span></div><input type="range" min="0" max="100" value="0"></div>
-                    <div class="range-item"><div class="range-label"><span>Chống Giật Khung Hình FPS</span><span class="range-val">0%</span></div><input type="range" min="0" max="100" value="0"></div>
-                </div>
-            </div>
-
-            <!-- TAB LIVE -->
-            <div id="tab-live" class="tab-content">
-                <h2>THỐNG KÊ LIVE</h2>
-                <div class="ram-chart-container">
-                    <div class="ram-info">Bộ nhớ RAM hiện tại: <span id="ram-percentage" class="highlight">45%</span></div>
-                    
-                    <!-- Biểu đồ lưới sóng nâng cấp -->
-                    <div class="advanced-chart">
-                        <div class="chart-grid-line"></div>
-                        <div class="chart-grid-line"></div>
-                        <div class="chart-grid-line"></div>
-                        <div class="wave-container" id="wave-container"></div>
-                    </div>
-                </div>
-                
-                <button id="btn-clean-ram">DỌN RAM NGAY</button>
-                <div id="console-log" class="console-box">
-                    <div class="console-line">> Trạng thái: Sẵn sàng kết nối...</div>
-                </div>
-            </div>
-
-            <!-- TAB CÀI ĐẶT -->
-            <div id="tab-caidat" class="tab-content">
-                <h2>CÀI ĐẶT HỆ THỐNG</h2>
-                <div class="setting-item">
-                    <span>Màu chủ đạo giao diện</span>
-                    <select id="theme-selector">
-                        <option value="#ff0055">Đỏ Neon</option>
-                        <option value="#00ffcc">Xanh Cyan Cyber</option>
-                        <option value="#ffcc00">Vàng Gaming</option>
-                        <option value="#00ff00">Xanh Matrix</option>
-                    </select>
-                </div>
-                <div class="setting-item">
-                    <span>Giao diện tối (Dark Mode)</span>
-                    <label class="switch"><input type="checkbox" checked id="darkmode-toggle"><span class="slider-round"></span></label>
-                </div>
-                <button id="btn-logout" class="btn-danger" style="margin-top: 30px;">Đăng xuất / Xóa Key</button>
-            </div>
-
-        </div>
-
-        <!-- THANH ĐẾM NGƯỢC THỜI GIAN THỰC ĐƯỢC ĐÍNH TRÊN MENU -->
-        <div id="menu-countdown-bar" class="countdown-ticker">
-            ⏳ Đang tải thời gian thực...
-        </div>
-
-        <!-- MENU ĐIỀU HƯỚNG BOTTOM -->
-        <nav class="bottom-nav">
-            <button class="nav-item active" data-tab="tab-home">🏠<br>Home</button>
-            <button class="nav-item" data-tab="tab-func">⚡<br>Func</button>
-            <button class="nav-item" data-tab="tab-boost">🚀<br>Boost</button>
-            <button class="nav-item" data-tab="tab-live">📊<br>Live</button>
-            <button class="nav-item" data-tab="tab-caidat">⚙️<br>Cài đặt</button>
-        </nav>
+    <div class="logo">
+        <i class="fa-solid fa-bolt"></i>
+        <span>NEON DASHBOARD</span>
     </div>
 
-    <script src="script.js"></script>
+    <div class="online">
+        ONLINE
+    </div>
+
+</header>
+
+<!-- PROFILE -->
+<section class="hero">
+
+<div class="profile-card">
+
+<img src="https://i.ibb.co/5X30YZpt/2a-Obo-Qa0-AOPz5h-D6n-F7h-GLADhbn-EQm-RC8j-FNKsb2.jpg" alt="avatar">
+
+<h2>ADMIN:Tấn Dũng</h2>
+
+<p>Dashboard System Monitor</p>
+
+<div class="socials">
+
+<a href="https://www.facebook.com/share/1Cz7sV86Ur/?mibextid=wwXIfr" target="_blank">
+<i class="fab fa-facebook-f"></i>
+</a>
+
+<a href="https://zalo.me/g/hh9rx4rmh34mz4xprive" target="_blank">
+<i class="fa-solid fa-comment"></i>
+</a>
+
+<a href="https://www.tiktok.com/@tandungluvyou206?_r=1&_t=ZS-96lXEfKu8V6" target="_blank">
+<i class="fab fa-tiktok"></i>
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- MENU -->
+<nav class="tabs">
+
+<button class="tab active" data-tab="home">
+<i class="fa-solid fa-house"></i>
+<span>Home</span>
+</button>
+
+<button class="tab" data-tab="func">
+<i class="fa-solid fa-sliders"></i>
+<span>Func</span>
+</button>
+
+<button class="tab" data-tab="boost">
+<i class="fa-solid fa-gauge-high"></i>
+<span>Boost</span>
+</button>
+
+<button class="tab" data-tab="live">
+<i class="fa-solid fa-chart-line"></i>
+<span>Live</span>
+</button>
+
+<button class="tab" data-tab="settings">
+<i class="fa-solid fa-gear"></i>
+<span>Settings</span>
+</button>
+
+</nav>
+
+<main>
+
+<!-- HOME -->
+
+<section id="home" class="panel activePanel">
+
+<h3>System Overview</h3>
+
+<div class="card-grid">
+
+<div class="info-card">
+<h4>CPU</h4>
+<span id="cpuUsage">0%</span>
+</div>
+
+<div class="info-card">
+<h4>RAM</h4>
+<span id="ramUsage">0%</span>
+</div>
+
+<div class="info-card">
+<h4>Network</h4>
+<span id="netUsage">0 KB/s</span>
+</div>
+
+<div class="info-card">
+<h4>Status</h4>
+<span>Running</span>
+</div>
+
+</div>
+
+</section>
+
+<!-- FUNC -->
+
+<section id="func" class="panel">
+
+<h3>Functions</h3>
+
+<div class="toggle-grid">
+
+<div class="toggle-card">
+<span>Dark Mode</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Animation</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Notification</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Performance</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Logger</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Overlay</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Network Info</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>FPS Counter</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Theme Sync</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Sound</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Auto Refresh</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+<div class="toggle-card">
+<span>Device Info</span>
+<label class="switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+
+</div>
+
+</section>
+
+<!-- BOOST -->
+
+<section id="boost" class="panel">
+
+<h3>Boost Panel</h3>
+
+<div class="slider-card">
+<label>CPU Boost</label>
+<input type="range" min="0" max="100" value="0">
+</div>
+
+<div class="slider-card">
+<label>RAM Boost</label>
+<input type="range" min="0" max="100" value="0">
+</div>
+
+<div class="slider-card">
+<label>GPU Boost</label>
+<input type="range" min="0" max="100" value="0">
+</div>
+
+<div class="slider-card">
+<label>Network Boost</label>
+<input type="range" min="0" max="100" value="0">
+</div>
+
+<div class="slider-card">
+<label>Power Mode</label>
+<input type="range" min="0" max="100" value="0">
+</div>
+
+<div class="slider-card">
+<label>Cache Manager</label>
+<input type="range" min="0" max="100" value="0">
+</div>
+
+</section>
+
+<!-- LIVE -->
+
+<section id="live" class="panel">
+
+<h3>Live Monitor</h3>
+
+<div class="live-stats">
+
+<div class="info-card">
+<h4>RAM Used</h4>
+<span id="ramUsed">0 MB</span>
+</div>
+
+<div class="info-card">
+<h4>RAM Free</h4>
+<span id="ramFree">0 MB</span>
+</div>
+
+<div class="info-card">
+<h4>CPU</h4>
+<span id="cpuLive">0%</span>
+</div>
+
+<div class="info-card">
+<h4>FPS</h4>
+<span id="fpsLive">60</span>
+</div>
+
+</div>
+
+<canvas id="ramChart"></canvas>
+<div class="device-card">
+
+<h4>Device Information</h4>
+
+<div class="device-row">
+<span>CPU Core</span>
+<span id="cpuCore">0</span>
+</div>
+
+<div class="device-row">
+<span>Browser</span>
+<span id="browserName">Chrome</span>
+</div>
+
+<div class="device-row">
+<span>Platform</span>
+<span id="platformName">Windows</span>
+</div>
+
+<div class="device-row">
+<span>Resolution</span>
+<span id="screenSize">0x0</span>
+</div>
+
+</div>
+
+<div id="consoleBox"></div>
+
+<button id="cleanRam" class="action-btn">
+DỌN RAM
+</button>
+
+</section>
+
+<!-- SETTINGS -->
+
+<section id="settings" class="panel">
+
+<h3>Cài Đặt</h3>
+
+<button id="toggleCrosshair" class="action-btn">
+BẬT / TẮT OVERLAY
+</button>
+
+<button id="themeBtn" class="action-btn">
+ĐỔI MÀU GIAO DIỆN
+</button>
+
+<button id="resetBtn" class="action-btn">
+RESET
+</button>
+
+</section>
+
+</main>
+
+<script src="script.js"></script>
+
 </body>
 </html>
