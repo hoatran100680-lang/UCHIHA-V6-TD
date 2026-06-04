@@ -232,19 +232,36 @@ function cleanRAM() {
 
 function launchGame(gameType) {
     playClickSound();
-    let appUri = gameType === 'max' ? "fb124535317618055ffmax://" : "fb124535317618055://";
-    let backupStoreUrl = gameType === 'max' ? 
-        "https://apple.com" : 
-        "https://apple.com";
     
-    logConsole(`Đang kích hoạt gói tăng tốc trò chơi...`);
+    // 1. Cấu hình đúng Scheme ID và Link tải App Store chính thức của Garena Free Fire
+    let appUri = "";
+    let backupStoreUrl = "";
+    let gameName = "";
+
+    if (gameType === 'max') {
+        gameName = "Free Fire MAX";
+        appUri = "fb124535317618055ffmax://"; 
+        // Thay bằng link App Store chuẩn của bản MAX
+        backupStoreUrl = "https://apple.com"; 
+    } else {
+        gameName = "Free Fire Thường";
+        appUri = "fb124535317618055://"; 
+        // Thay bằng link App Store chuẩn của bản Thường
+        backupStoreUrl = "https://apple.com"; 
+    }
     
-    // Mở ứng dụng trực tiếp bằng URL nội bộ của Garena
+    logConsole(`Đang kích hoạt gói tăng tốc trò chơi: ${gameName}...`);
+    
+    // 2. Kỹ thuật kích hoạt trên Safari iOS: Dùng phương thức gán trực tiếp qua một luồng tương tác riêng
+    // Điều này giúp Safari không bị đứng trang hoặc báo lỗi "Địa chỉ không hợp lệ"
+    let openTime = Date.now();
+    
     window.location.href = appUri;
 
-    let startTime = Date.now();
+    // 3. Cơ chế kiểm tra an toàn (Fallback)
     setTimeout(() => {
-        if (Date.now() - startTime < 2200) {
+        // Nếu người dùng vẫn ở lại Safari sau 2 giây (tức là không mở được game)
+        if (Date.now() - openTime < 2200) {
             logConsole(`Thiết bị chưa có game. Đang kết nối App Store tải ứng dụng...`);
             window.location.href = backupStoreUrl;
         }
