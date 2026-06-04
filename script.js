@@ -242,12 +242,12 @@ function launchGame(gameType) {
         gameName = "Free Fire MAX";
         appUri = "fb124535317618055ffmax://"; 
         // Thay bằng link App Store chuẩn của bản MAX
-        backupStoreUrl = "https://apple.com"; 
+        backupStoreUrl = "https://apps.apple.com/vn/app/free-fire-max/id1480516829?l=vi"; 
     } else {
         gameName = "Free Fire Thường";
         appUri = "fb124535317618055://"; 
         // Thay bằng link App Store chuẩn của bản Thường
-        backupStoreUrl = "https://apple.com"; 
+        backupStoreUrl = "https://apps.apple.com/vn/app/free-fire-b%C3%AD-%E1%BA%A9n-bi%E1%BB%83n-s%C3%A2u/id1300146617?l=vi"; 
     }
     
     logConsole(`Đang kích hoạt gói tăng tốc trò chơi: ${gameName}...`);
