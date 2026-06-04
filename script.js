@@ -232,38 +232,46 @@ function cleanRAM() {
 
 function launchGame(gameType) {
     playClickSound();
+    initAudioContext(); // Mở khóa âm thanh song song
     
-    // 1. Cấu hình đúng Scheme ID và Link tải App Store chính thức của Garena Free Fire
     let appUri = "";
-    let backupStoreUrl = "";
+    let storeUrl = "";
     let gameName = "";
 
+    // Sử dụng mã định danh cổng bảo mật hệ thống (Bundle ID) chính thức của Garena
     if (gameType === 'max') {
         gameName = "Free Fire MAX";
         appUri = "fb124535317618055ffmax://"; 
-        // Thay bằng link App Store chuẩn của bản MAX
-        backupStoreUrl = "https://apps.apple.com/vn/app/free-fire-max/id1480516829?l=vi"; 
+        storeUrl = "https://apps.apple.com/vn/app/free-fire-max/id1480516829?l=vi"; 
     } else {
         gameName = "Free Fire Thường";
-        appUri = "fb124535317618055://"; 
-        // Thay bằng link App Store chuẩn của bản Thường
-        backupStoreUrl = "https://apps.apple.com/vn/app/free-fire-b%C3%AD-%E1%BA%A9n-bi%E1%BB%83n-s%C3%A2u/id1300146617?l=vi"; 
+        appUri = "com.garena.game.kgvn://"; // Scheme ID gốc bản Việt Nam trên iOS giúp mở thẳng app
+        storeUrl = "https://apps.apple.com/vn/app/free-fire-b%C3%AD-%E1%BA%A9n-bi%E1%BB%83n-s%C3%A2u/id1300146617?l=vi"; 
     }
     
-    logConsole(`Đang kích hoạt gói tăng tốc trò chơi: ${gameName}...`);
-    
-    // 2. Kỹ thuật kích hoạt trên Safari iOS: Dùng phương thức gán trực tiếp qua một luồng tương tác riêng
-    // Điều này giúp Safari không bị đứng trang hoặc báo lỗi "Địa chỉ không hợp lệ"
-    let openTime = Date.now();
-    
-    window.location.href = appUri;
+    logConsole(`Đang kích hoạt cổng kết nối ứng dụng: ${gameName}...`);
 
-    // 3. Cơ chế kiểm tra an toàn (Fallback)
+    // GIẢI PHÁP VƯỢT RÀO BẢO MẬT SAFARI:
+    // Tạo một thẻ liên kết <a> ảo, gán lệnh mở app trực tiếp và giả lập hành động Click của con người.
+    // Cách này đánh lừa Safari rằng đây là hành động người dùng muốn mở app chủ động.
+    let linkNavigator = document.createElement('a');
+    linkNavigator.href = appUri;
+    linkNavigator.style.display = 'none';
+    document.body.appendChild(linkNavigator);
+    
+    // Kích hoạt luồng mở app trực tiếp
+    linkNavigator.click();
+    document.body.removeChild(linkNavigator);
+
+    // THIẾT LẬP ĐƯỜNG LÙI AN TOÀN (FALLBACK)
+    // Nếu máy ĐÃ CÓ GAME, Safari sẽ nhảy vào game ngay lập tức và đóng luồng xử lý web này lại.
+    // Nếu máy CHƯA CÓ GAME, lệnh click trên sẽ bị vô hiệu hóa ngầm, sau 2 giây trang web mới tự động chuyển tới App Store.
+    let checkTime = Date.now();
     setTimeout(() => {
-        // Nếu người dùng vẫn ở lại Safari sau 2 giây (tức là không mở được game)
-        if (Date.now() - openTime < 2200) {
-            logConsole(`Thiết bị chưa có game. Đang kết nối App Store tải ứng dụng...`);
-            window.location.href = backupStoreUrl;
+        // Nếu sau 2 giây trình duyệt vẫn đứng yên ở trang web (tức là không mở được app)
+        if (Date.now() - checkTime < 2200) {
+            logConsole(`Ứng dụng chưa được cài đặt. Đang điều hướng đến kho ứng dụng App Store...`);
+            window.location.href = storeUrl;
         }
     }, 2000);
 }
