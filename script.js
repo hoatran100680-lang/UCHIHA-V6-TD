@@ -232,48 +232,39 @@ function cleanRAM() {
 
 function launchGame(gameType) {
     playClickSound();
-    initAudioContext(); // Mở khóa âm thanh song song
-    
-    let appUri = "";
+    initAudioContext(); 
+
+    let appUrl = "";
     let storeUrl = "";
     let gameName = "";
 
-    // Sử dụng mã định danh cổng bảo mật hệ thống (Bundle ID) chính thức của Garena
+    // 1. Cấu hình đúng đường dẫn chính thức cho iOS
     if (gameType === 'max') {
         gameName = "Free Fire MAX";
-        appUri = "fb124535317618055ffmax://"; 
-        storeUrl = "https://apps.apple.com/vn/app/free-fire-max/id1480516829?l=vi"; 
+        appUrl = "freefiremax://"; // URL Scheme của bản Max
+        storeUrl = "https://apps.apple.com/vn/app/free-fire-max/id1480516829?l=vi"; // Link App Store chuẩn của FF Max
     } else {
         gameName = "Free Fire Thường";
-        appUri = "com.garena.game.kgvn://"; // Scheme ID gốc bản Việt Nam trên iOS giúp mở thẳng app
-        storeUrl = "https://apps.apple.com/vn/app/free-fire-b%C3%AD-%E1%BA%A9n-bi%E1%BB%83n-s%C3%A2u/id1300146617?l=vi"; 
+        appUrl = "freefire://"; // URL Scheme của bản Thường
+        storeUrl = "https://apple.com"; // Link App Store chuẩn của FF Thường
     }
-    
-    logConsole(`Đang kích hoạt cổng kết nối ứng dụng: ${gameName}...`);
 
-    // GIẢI PHÁP VƯỢT RÀO BẢO MẬT SAFARI:
-    // Tạo một thẻ liên kết <a> ảo, gán lệnh mở app trực tiếp và giả lập hành động Click của con người.
-    // Cách này đánh lừa Safari rằng đây là hành động người dùng muốn mở app chủ động.
-    let linkNavigator = document.createElement('a');
-    linkNavigator.href = appUri;
-    linkNavigator.style.display = 'none';
-    document.body.appendChild(linkNavigator);
-    
-    // Kích hoạt luồng mở app trực tiếp
-    linkNavigator.click();
-    document.body.removeChild(linkNavigator);
+    logConsole(`Đang kết nối đến ứng dụng: ${gameName}...`);
 
-    // THIẾT LẬP ĐƯỜNG LÙI AN TOÀN (FALLBACK)
-    // Nếu máy ĐÃ CÓ GAME, Safari sẽ nhảy vào game ngay lập tức và đóng luồng xử lý web này lại.
-    // Nếu máy CHƯA CÓ GAME, lệnh click trên sẽ bị vô hiệu hóa ngầm, sau 2 giây trang web mới tự động chuyển tới App Store.
-    let checkTime = Date.now();
+    // 2. GIẢI PHÁP CHO iOS: Sử dụng cơ chế mở trực tiếp thông qua thay đổi URL gốc 
+    // Thay vì tạo thẻ <a> ẩn dễ bị trình duyệt chặn, bạn gán trực tiếp URL vào vị trí hiện tại
+    window.location.href = appUrl;
+
+    // 3. Cơ chế kiểm tra an toàn (Fallback)
+    // Tăng thời gian chờ lên 2500ms để trình duyệt kịp xử lý lệnh mở ứng dụng trước khi quyết định nhảy vào App Store
+    let beforeRedirect = Date.now();
     setTimeout(() => {
-        // Nếu sau 2 giây trình duyệt vẫn đứng yên ở trang web (tức là không mở được app)
-        if (Date.now() - checkTime < 2200) {
-            logConsole(`Ứng dụng chưa được cài đặt. Đang điều hướng đến kho ứng dụng App Store...`);
+        // Nếu sau 2.5 giây người dùng vẫn ở lại trình duyệt (tức là không mở được game do máy chưa cài)
+        if (Date.now() - beforeRedirect < 2700) {
+            logConsole("Không tìm thấy ứng dụng trên thiết bị. Đang chuyển hướng đến App Store...");
             window.location.href = storeUrl;
         }
-    }, 2000);
+    }, 2500);
 }
 
 function toggleCrosshair(checkbox) {
